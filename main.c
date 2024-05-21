@@ -6,33 +6,9 @@
 #include <ctype.h>
 
 #include "stack.h"
-#include "queue.h"
 #include "postfix.h"
 
-#define MAX_STRING_LEN 256
-
-/*
- * displayResult() prints the final output from the given input operations.
- */
-void displayResult(Node *head)
-{
-	int i;
-
-	Node *current = head;
-
-	while (current->next != NULL) {
-		printf("%d ", current->data);
-		current = current->next;
-	}
-}
-
-void displayPostfix(char *output, int n)
-{
-	int i;
-	for (i = 0; i < n; i++) {
-		printf("%c ", output[i]);
-	}
-}
+#define MAX_STRING_LEN 256 // Defined in specs.
 
 /*
  * main() is a driver program.
@@ -41,21 +17,31 @@ void displayPostfix(char *output, int n)
 int main()
 {
 	// Initialize linked list for operators.
-	Node *operatorHead = NULL;
+	Node *operatorHead;
 
-	// Get user input.
+	// Store user input.
 	char input[MAX_STRING_LEN];
-	char output[MAX_STRING_LEN];
-	scanf("%s", input);
 
-	// Call functions to convert from infix to postfix notation.
-	infixToPostfix(input, strlen(input), output, &operatorHead);
-	displayPostfix(output, strlen(input));
+	// Store postfix output.
+	char postfixOutput[MAX_STRING_LEN];
 
-	printList(operatorHead);
+	while (strcmp(input, "QUIT") != 0) {
+		// Reset head pointer and input/output strings.
+		operatorHead = NULL;
+		input[0] = '\0';
+		postfixOutput[0] = '\0';
 
-	printf("\nlength: %d\n", length(operatorHead));
-	printf("isEmpty: %d\n", isEmpty(operatorHead));
-	printf("isFull: %d\n", isFull(operatorHead));
+		// Get user input.
+		scanf("%s", input);
+
+		if (strcmp(input, "QUIT") != 0) {
+			// Call functions to convert from infix to postfix notation.
+			infixToPostfix(input, strlen(input), postfixOutput, &operatorHead);
+			displayPostfix(postfixOutput, strlen(input));
+
+			printList(operatorHead);
+			clearList(&operatorHead);
+		}
+	}
 	return 0;
 }

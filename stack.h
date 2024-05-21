@@ -15,7 +15,7 @@ typedef struct Node Node;
  * @param Node* head: The first element of the linked list.
  * @return Integer corresponding to the number of elements in the linked list.
  */
-int length(Node* head)
+int length(Node *head)
 {
 	Node *current = head;
 	int length = 0;
@@ -33,7 +33,7 @@ int length(Node* head)
  * @param Node* head: The first element of the linked list.
  * @return Boolean that states if the list is empty or not.
  */
-bool isEmpty(Node* head)
+bool isEmpty(Node *head)
 {
 	int listLength = length(head);
 
@@ -46,12 +46,12 @@ bool isEmpty(Node* head)
 
 /*
  * isFull() checks if the given list is empty.
+ * QUESTION: is this needed at all? do we even have a maximum for the stack? ik the input has a maximum since it's an array.
  * @param Node* head: The first element of the linked list.
  * @return Boolean that states if the list is full or not.
  */
-bool isFull(Node* head)
+bool isFull(Node *head)
 {
-	Node *current = head;
 	int listLength = length(head);
 
 	if (listLength != 0) {
@@ -66,15 +66,15 @@ bool isFull(Node* head)
  * @param Node** head: Pointer to first element of the linked list.
  * @param char data: Data to input into the stack.
  */
-void initializeList(Node** headPtr, char data)
+void initializeList(Node **headPtr, char data)
 {
 	// Allocate memory to a new Node.
-	Node *newNode = (Node *) malloc(sizeof(Node));
+	Node *newNode = malloc(sizeof(Node));
 
 	// Set data in new Node.
 	newNode->data = data;
 
-	// Set next Node to pointer to head of current list.
+	// Set next Node to pointer to NULL.
 	newNode->next = NULL;
 
 	// Set head to new Node.
@@ -86,7 +86,7 @@ void initializeList(Node** headPtr, char data)
  * @param Node** head: Pointer to first element of the linked list.
  * @param char data: Data to input into the stack.
  */
-void push(Node** headPtr, char data)
+void push(Node **headPtr, char data)
 {
 	// Allocate memory to a new Node.
 	Node *newNode = malloc(sizeof(Node));
@@ -105,26 +105,46 @@ void push(Node** headPtr, char data)
  * pop() removes the element at the top of the stack.
  * @param Node** head: Pointer to first element of the linked list.
  */
-void pop(Node** headPtr)
+void pop(Node **headPtr)
 {
-	if (!isEmpty(*headPtr)) {
-		Node *current = *headPtr;
+	Node *current = *headPtr;
 
+	// Check for underflow.
+	if (!isEmpty(*headPtr)) {
+		// Set pointer to head to pointer to next Node.
+		*headPtr = current->next;
+
+		// Free memory used by current Node.
+		free(current);
 	}
 }
 
 /*
- * top() returns the current node.
+ * top() returns the element at the top of the stack.
  * @param Node* head: The first element of the linked list.
  * @return The element on top of the stack.
  */
-Node* top(Node* head)
+Node* top(Node *head)
 {
 	Node *current = head;
 
+	// Last element in the stack has a NULL pointer to the next element because there is none.
 	while (current != NULL) {
 		current = current->next;
 	}
 
 	return current;
+}
+
+/*
+ *
+ */
+void clearList(Node **headPtr)
+{
+	Node *current = *headPtr;
+
+	while (current != NULL) {
+		current = current->next;
+		pop(&current);
+	}
 }

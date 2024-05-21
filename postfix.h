@@ -1,3 +1,31 @@
+/*
+ * operatorPriority() returns a priority value given a character mathematical operator.
+ * In the Shunting Yard algorithm, operator priority is used to determine whether to
+ * push an operator into a stack or into the output.
+ * @param char operator: Mathematical operator.
+ * @return Integer priority value.
+ */
+int operatorPriority(char operator)
+{
+	// TODO: Figure out logical and boolean operator priority level.
+	// I think logical is highest and boolean is lowest iirc?
+	switch (operator)
+	{
+	case '(':
+	case ')':
+	case '^':
+		return 3;
+	case '*':
+	case '/':
+		return 2;
+	case '+':
+	case '-':
+		return 1;
+	default:
+		return 0;
+	}
+}
+
 
 /*
  * infixToPostfix() converts a given string of math operations in infix notation to postfix notation.
@@ -7,18 +35,35 @@
  * @param char output[]: Output postfix notation string.
  * @param Node **operatorHead: Pointer to operator linked list head.
  */
-void infixToPostfix(char input[], int n, char output[], Node **operatorHead)
+void infixToPostfix(char input[], int n, char postfixStr[], Node **operatorHead)
 {
 	int i;
-	Node *current = *operatorHead;
 
-	// How many elements are in output[]?
-	int outputN = 0;
+	// How many elements are in postfixStr[]?
+	int elemCount = 0;
 
+	bool isInParenthesis = false;
+
+	// TODO: Complete the logic for postfix conversion.
+	// TODO: Determine if output should be a string/array or linked list.
+	//
+	// # String/array
+	// Pros: easier access
+	// Cons: can't easily set multi-digit numbers. Can't do integer array either because we need to represent operators in output as well.
+	//
+	// # Linked list
+	// Pros: multi-digit numbers.
+	// Cons: need to create another version of node/recreate node structure because it only accommodates one char in data.
 	for (i = 0; i < n; i++) {
+		// Check if input char is digit.
 		if (isdigit(input[i])) {
-			output[outputN] = input[i];
-			outputN++;
+			postfixStr[elemCount] = input[i];
+			elemCount++;
+		} else if (input[i] == '(' || input[i] == ')') {
+			isInParenthesis = !isInParenthesis;
+		} else if (!isdigit(input[i]) && isInParenthesis) {
+			postfixStr[elemCount] = input[i];
+			elemCount++;
 		} else {
 			if (i == 0) {
 				initializeList(operatorHead, input[i]);
@@ -29,6 +74,14 @@ void infixToPostfix(char input[], int n, char output[], Node **operatorHead)
 	}
 }
 
+void displayPostfix(char *postfixStr, int n)
+{
+	int i;
+	for (i = 0; i < n; i++) {
+		printf("%c ", postfixStr[i]);
+	}
+}
+
 /*
  * printList() prints the contents of a given linked list.
  * @param Node *head: First element of a linked list.
@@ -36,10 +89,12 @@ void infixToPostfix(char input[], int n, char output[], Node **operatorHead)
 void printList(Node *head)
 {
 	Node *current = head;
-	int i;
 
+	// Print data in each node until there is no next node.
 	while (current != NULL) {
 		printf("%c ", current->data);
 		current = current->next;
 	}
+
+	printf("\n");
 }
