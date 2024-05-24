@@ -8,24 +8,36 @@
 int operatorPriority(char operator)
 {
 	// TODO: Figure out logical and boolean operator priority level.
-	// I think logical is highest and boolean is lowest iirc?
+	// ICP = incoming priority, ISP = in-stack priority
+	// OPERATOR | ICP | ISP
+	//    (     |  6  |  0
+	//    ^     |  5  |  4
+	//    *     |  3  |  3
+	//    /     |  3  |  3
+	//    +     |  2  |  2
+	//    -     |  2  |  2
+	//    >     |  1  |  1
+	//    <     |  1  |  1
 	switch (operator)
 	{
 	case '(':
 	case ')':
+		return 6;
 	case '^':
-		return 3;
+		return 5;
 	case '*':
 	case '/':
-		return 2;
+		return 3;
 	case '+':
 	case '-':
+		return 2;
+	case '>':
+	case '<':
 		return 1;
 	default:
 		return 0;
 	}
 }
-
 
 /*
  * infixToPostfix() converts a given string of math operations in infix notation to postfix notation.
@@ -64,7 +76,7 @@ void infixToPostfix(char input[], int n, char postfixStr[], Node **operatorHead)
 		} else if (!isdigit(input[i]) && isInParenthesis) {
 			postfixStr[elemCount] = input[i];
 			elemCount++;
-		} else {
+		} else if (!isdigit(input[i])) {
 			if (i == 0) {
 				initializeList(operatorHead, input[i]);
 			} else {

@@ -5,10 +5,10 @@
 #include <stdlib.h>
 #include <ctype.h>
 
+#define MAX_STRING_LEN 256 // Defined in specs.
+
 #include "stack.h"
 #include "postfix.h"
-
-#define MAX_STRING_LEN 256 // Defined in specs.
 
 /*
  * main() is a driver program.
@@ -37,10 +37,8 @@ int main()
 		if (strcmp(input, "QUIT") != 0) {
 			// Call functions to convert from infix to postfix notation.
 			infixToPostfix(input, strlen(input), postfixOutput, &operatorHead);
-			displayPostfix(postfixOutput, strlen(input));
 
 			printList(operatorHead);
-			clearList(&operatorHead);
 		}
 	}
 	return 0;

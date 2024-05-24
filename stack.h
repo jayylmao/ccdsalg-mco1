@@ -45,23 +45,6 @@ bool isEmpty(Node *head)
 }
 
 /*
- * isFull() checks if the given list is empty.
- * QUESTION: is this needed at all? do we even have a maximum for the stack? ik the input has a maximum since it's an array.
- * @param Node* head: The first element of the linked list.
- * @return Boolean that states if the list is full or not.
- */
-bool isFull(Node *head)
-{
-	int listLength = length(head);
-
-	if (listLength != 0) {
-		return true;
-	} else {
-		return false;
-	}
-}
-
-/*
  * initializeList() adds the first element to the top of the stack.
  * @param Node** head: Pointer to first element of the linked list.
  * @param char data: Data to input into the stack.
@@ -134,17 +117,4 @@ Node* top(Node *head)
 	}
 
 	return current;
-}
-
-/*
- *
- */
-void clearList(Node **headPtr)
-{
-	Node *current = *headPtr;
-
-	while (current != NULL) {
-		current = current->next;
-		pop(&current);
-	}
 }
