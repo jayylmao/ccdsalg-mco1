@@ -4,7 +4,7 @@
 
 // Node structure for each element in the stack/linked list.
 struct Node {
-	char data;
+	char data[MAX_STRING_LEN];
 	struct Node* next;
 };
 
@@ -12,7 +12,7 @@ typedef struct Node Node;
 
 /*
  * length() returns the number of elements in the list.
- * @param Node* head: The first element of the linked list.
+ * @param Node *head: The first element of the linked list.
  * @return Integer corresponding to the number of elements in the linked list.
  */
 int length(Node *head)
@@ -30,7 +30,7 @@ int length(Node *head)
 
 /*
  * isEmpty() checks if the given list is empty.
- * @param Node* head: The first element of the linked list.
+ * @param Node *head: The first element of the linked list.
  * @return Boolean that states if the list is empty or not.
  */
 bool isEmpty(Node *head)
@@ -46,16 +46,16 @@ bool isEmpty(Node *head)
 
 /*
  * initializeList() adds the first element to the top of the stack.
- * @param Node** head: Pointer to first element of the linked list.
+ * @param Node **head: Pointer to first element of the linked list.
  * @param char data: Data to input into the stack.
  */
-void initializeList(Node **headPtr, char data)
+void initializeList(Node **headPtr, char data[])
 {
 	// Allocate memory to a new Node.
 	Node *newNode = malloc(sizeof(Node));
 
 	// Set data in new Node.
-	newNode->data = data;
+	strcpy(newNode->data, data);
 
 	// Set next Node to pointer to NULL.
 	newNode->next = NULL;
@@ -66,16 +66,16 @@ void initializeList(Node **headPtr, char data)
 
 /*
  * push() adds the element to the top of the stack.
- * @param Node** head: Pointer to first element of the linked list.
+ * @param Node **head: Pointer to first element of the linked list.
  * @param char data: Data to input into the stack.
  */
-void push(Node **headPtr, char data)
+void push(Node **headPtr, char data[])
 {
 	// Allocate memory to a new Node.
 	Node *newNode = malloc(sizeof(Node));
 
 	// Set data in new Node.
-	newNode->data = data;
+	strcpy(newNode->data, data);
 
 	// Set next Node to pointer to head of current list.
 	newNode->next = *headPtr;
@@ -86,7 +86,7 @@ void push(Node **headPtr, char data)
 
 /*
  * pop() removes the element at the top of the stack.
- * @param Node** head: Pointer to first element of the linked list.
+ * @param Node **head: Pointer to first element of the linked list.
  */
 void pop(Node **headPtr)
 {
@@ -104,7 +104,7 @@ void pop(Node **headPtr)
 
 /*
  * top() returns the element at the top of the stack.
- * @param Node* head: The first element of the linked list.
+ * @param Node *head: The first element of the linked list.
  * @return The element on top of the stack.
  */
 Node* top(Node *head)
@@ -117,4 +117,17 @@ Node* top(Node *head)
 	}
 
 	return current;
+}
+
+/*
+ * clearList() pops all elements from a given stack.
+ * @param Node **headPtr
+*/
+void clearList(Node **headPtr)
+{
+	Node *current = top(*headPtr);
+	while (current != NULL) {
+		pop(headPtr);
+		*current = *current->next;
+	}
 }
