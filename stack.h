@@ -130,6 +130,5 @@ void clearList(StackNode **headPtr)
 	StackNode *current = top(*headPtr);
 	while (current != NULL) {
 		pop(headPtr);
-		*current = *current->next;
 	}
 }

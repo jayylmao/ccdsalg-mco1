@@ -37,7 +37,8 @@ void enqueue(QueueNode **headPtr, QueueNode **tailPtr, char *data)
 	newNode->next = NULL;
 
 	// Set data in new QueueNode.
-	strcpy(newNode->data, data);
+	strncpy(newNode->data, data, sizeof(newNode->data));
+	newNode->data[sizeof(newNode->data) - 1] = '\0';
 
 	if (*headPtr == NULL && *tailPtr == NULL) {
 		*headPtr = *tailPtr = newNode;

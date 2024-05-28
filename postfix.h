@@ -88,7 +88,7 @@ void printList(QueueNode *head)
  */
 void comparePriority(char incomingOperator, StackNode **operatorHead, QueueNode **outputHead, QueueNode **outputTail)
 {
-	StackNode *current, *temp;
+	StackNode *current;
 	char inStackOperator;
 
 	current = *operatorHead;
@@ -104,10 +104,8 @@ void comparePriority(char incomingOperator, StackNode **operatorHead, QueueNode 
 				// While there's an operator in the stack with a higher priority to the incoming one,
 				// Enqueue that into the output and pop it from the stack.
 				enqueue(outputHead, outputTail, &inStackOperator);
-
-				temp = current;
+				pop(&current);
 				current = current->next;
-				pop(&temp);
 
 				// Set the in-stack operator to the current node's data.
 				inStackOperator = current->data;
@@ -133,6 +131,11 @@ void infixToPostfix(char input[], StackNode **operatorHead, QueueNode **outputHe
 	// A buffer is used to keep operands of > 1 digit together, to be enqueued as one element.
 	char buffer[MAX_STRING_LEN];
 
+	// When using strcpy() to copy a single character over,
+	// it will copy additional garbage data unless there is a
+	// null terminator, so we need to put the char in a string before enqueueing.
+	char enqueueBuffer[2];
+
 	// Each character in the input string is called a "token".
 	char token;
 
@@ -152,7 +155,7 @@ void infixToPostfix(char input[], StackNode **operatorHead, QueueNode **outputHe
 			enqueue(outputHead, outputTail, buffer);
 
 			// Clear the buffer.
-			strcpy(buffer, "");
+			strcpy(buffer, "\0");
 
 			// Compare the priority of the incoming operator from the input and the in-stack operator.
 			comparePriority(token, operatorHead, outputHead, outputTail);
@@ -240,18 +243,18 @@ void infixToPostfix(char input[], StackNode **operatorHead, QueueNode **outputHe
 
 
 	// Enqueue buffer contents into output queue and clear the buffer.
-	if (strcmp(buffer, "") != 0) {
+	if (strcmp(buffer, "\0") != 0) {
 		enqueue(outputHead, outputTail, buffer);
-		strcpy(buffer, "");
+		strcpy(buffer, "\0");
 	}
 
 	// Pop all remaining operators in stack to output queue.
 	current = *operatorHead;
 	while (current != NULL) {
-		enqueue(outputHead, outputTail, &current->data);
+		// Removing this buffer will result in garbage data being copied over,
+		// alongside the operator.
+		enqueueBuffer[0] = current->data;
+		enqueue(outputHead, outputTail, enqueueBuffer);
 		current = current->next;
 	}
-
-	// Clear unused nodes to save on memory.
-	clearList(operatorHead);
 }
