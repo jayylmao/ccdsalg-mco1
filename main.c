@@ -7,6 +7,7 @@
 
 #define MAX_STRING_LEN 256 // Defined in specs.
 
+#include "queue.h"
 #include "stack.h"
 #include "postfix.h"
 
@@ -16,25 +17,33 @@
  */
 int main()
 {
-	// Initialize linked list for operators.
-	Node *operatorHead;
+	// Initialize operator stack.
+	StackNode *operatorHead;
+
+	// Initialize output queue.
+	QueueNode *outputHead;
+	QueueNode *outputTail;
 
 	// Store user input.
 	char input[MAX_STRING_LEN];
 
+	outputHead = NULL;
+	outputTail = NULL;
 
+	// User must type "QUIT" to exit the program.
 	while (strcmp(input, "QUIT") != 0) {
 		// Reset head pointer
 		operatorHead = NULL;
+		outputHead = NULL;
+		outputTail = NULL;
 
 		// Get user input.
 		scanf("%s", input);
 
 		if (strcmp(input, "QUIT") != 0) {
 			// Call functions to convert from infix to postfix notation.
-			infixToPostfix(input, strlen(input), &operatorHead);
-
-			clearList(&operatorHead);
+			infixToPostfix(input, &operatorHead, &outputHead, &outputTail);
+			printList(outputHead);
 		}
 	}
 	return 0;

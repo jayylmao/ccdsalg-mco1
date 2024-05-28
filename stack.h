@@ -2,22 +2,22 @@
 // However, linked list is the data structure in C we are using to represent the stack
 // in the program.
 
-// Node structure for each element in the stack/linked list.
-struct Node {
-	char data[MAX_STRING_LEN];
-	struct Node* next;
+// StackNode structure for each element in the stack/linked list.
+struct StackNode {
+	char data;
+	struct StackNode* next;
 };
 
-typedef struct Node Node;
+typedef struct StackNode StackNode;
 
 /*
  * length() returns the number of elements in the list.
- * @param Node *head: The first element of the linked list.
+ * @param StackNode *head: The first element of the linked list.
  * @return Integer corresponding to the number of elements in the linked list.
  */
-int length(Node *head)
+int length(StackNode *head)
 {
-	Node *current = head;
+	StackNode *current = head;
 	int length = 0;
 
 	while (current != NULL) {
@@ -29,87 +29,89 @@ int length(Node *head)
 }
 
 /*
- * isEmpty() checks if the given list is empty.
- * @param Node *head: The first element of the linked list.
+ * stackEmpty() checks if the given list is empty.
+ * @param StackNode *head: The first element of the linked list.
  * @return Boolean that states if the list is empty or not.
  */
-bool isEmpty(Node *head)
+bool stackEmpty(StackNode *head)
 {
-	int listLength = length(head);
-
-	if (listLength == 0) {
+	if (head == NULL) {
 		return true;
 	} else {
 		return false;
 	}
 }
 
-/*
- * initializeList() adds the first element to the top of the stack.
- * @param Node **head: Pointer to first element of the linked list.
- * @param char data: Data to input into the stack.
- */
-void initializeList(Node **headPtr, char data[])
-{
-	// Allocate memory to a new Node.
-	Node *newNode = malloc(sizeof(Node));
+// /*
+//  * initializeList() adds the first element to the top of the stack.
+//  * @param StackNode **head: Pointer to first element of the linked list.
+//  * @param char data: Data to input into the stack.
+//  */
+// void initializeList(StackNode **headPtr, char data[])
+// {
+// 	// Allocate memory to a new StackNode.
+// 	StackNode *newNode = malloc(sizeof(StackNode));
 
-	// Set data in new Node.
-	strcpy(newNode->data, data);
+// 	// Set data in new StackNode.
+// 	strcpy(newNode->data, data);
 
-	// Set next Node to pointer to NULL.
-	newNode->next = NULL;
+// 	// Set next StackNode to pointer to NULL.
+// 	newNode->next = NULL;
 
-	// Set head to new Node.
-	*headPtr = newNode;
-}
+// 	// Set head to new StackNode.
+// 	*headPtr = newNode;
+// }
 
 /*
  * push() adds the element to the top of the stack.
- * @param Node **head: Pointer to first element of the linked list.
+ * @param StackNode **head: Pointer to first element of the linked list.
  * @param char data: Data to input into the stack.
  */
-void push(Node **headPtr, char data[])
+void push(StackNode **headPtr, char data)
 {
-	// Allocate memory to a new Node.
-	Node *newNode = malloc(sizeof(Node));
+	// Allocate memory to a new StackNode.
+	StackNode *newNode = malloc(sizeof(StackNode));
 
-	// Set data in new Node.
-	strcpy(newNode->data, data);
+	// Set next StackNode to pointer to head of current list.
+	if (headPtr == NULL) {
+		newNode->next = NULL;
+	} else {
+		newNode->next = *headPtr;
+	}
 
-	// Set next Node to pointer to head of current list.
-	newNode->next = *headPtr;
+	// Set data in new StackNode.
+	newNode->data = data;
 
-	// Set head to new Node.
+	// Set head to new StackNode.
 	*headPtr = newNode;
 }
 
 /*
  * pop() removes the element at the top of the stack.
- * @param Node **head: Pointer to first element of the linked list.
+ * @param StackNode **head: Pointer to first element of the linked list.
  */
-void pop(Node **headPtr)
+void pop(StackNode **headPtr)
 {
-	Node *current = *headPtr;
+	StackNode *current = *headPtr;
 
 	// Check for underflow.
-	if (!isEmpty(*headPtr)) {
-		// Set pointer to head to pointer to next Node.
+	if (!stackEmpty(*headPtr)) {
+		// Set pointer to head to pointer to next StackNode.
 		*headPtr = current->next;
 
-		// Free memory used by current Node.
+		// Free memory used by current StackNode.
 		free(current);
 	}
 }
 
 /*
  * top() returns the element at the top of the stack.
- * @param Node *head: The first element of the linked list.
+ * @param StackNode *head: The first element of the linked list.
  * @return The element on top of the stack.
  */
-Node* top(Node *head)
+StackNode* top(StackNode *head)
 {
-	Node *current = head;
+	StackNode *current = head;
 
 	// Last element in the stack has a NULL pointer to the next element because there is none.
 	while (current != NULL) {
@@ -121,11 +123,11 @@ Node* top(Node *head)
 
 /*
  * clearList() pops all elements from a given stack.
- * @param Node **headPtr
+ * @param StackNode **headPtr
 */
-void clearList(Node **headPtr)
+void clearList(StackNode **headPtr)
 {
-	Node *current = top(*headPtr);
+	StackNode *current = top(*headPtr);
 	while (current != NULL) {
 		pop(headPtr);
 		*current = *current->next;

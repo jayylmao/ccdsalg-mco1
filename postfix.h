@@ -1,13 +1,13 @@
 /*
- * operatorPriority() returns a priority value given a character mathematical operator.
+ * priority() returns a priority value given a character mathematical operator.
  * In the Shunting Yard algorithm, operator priority is used to determine whether to
  * push an operator into a stack or into the output.
  * Constraints: Mode can only be 'c' or 's'.
- * @param char operator: Mathematical operator.
- * @param char mode: Changes return value based on whether operator to check is in-stack (s) or incoming (c).
+ * @param operator: Mathematical operator.
+ * @param mode: Changes return value based on whether operator to check is in-stack (s) or incoming (c).
  * @return Integer priority value.
  */
-int operatorPriority(char operator, char mode)
+int priority(char operator, char mode)
 {
 	// TODO: Figure out logical and boolean operator priority level.
 	// ICP = incoming priority, ISP = in-stack priority
@@ -65,11 +65,11 @@ int operatorPriority(char operator, char mode)
 
 /*
  * printList() prints the contents of a given linked list.
- * @param Node *head: First element of a linked list.
+ * @param *head: First element of a linked list.
  */
-void printList(Node *head)
+void printList(QueueNode *head)
 {
-	Node *current = head;
+	QueueNode *current = head;
 
 	// Print data in each node until there is no next node.
 	while (current != NULL) {
@@ -81,84 +81,177 @@ void printList(Node *head)
 }
 
 /*
- * infixToPostfix() converts a given string of math operations in infix notation to postfix notation.
- * Constraints: Correct formatting is assumed.
- * @param char input[]: Infix notation string.
- * @param int n: Length of input.
- * @param char output[]: Output postfix notation string.
- * @param Node **operatorHead: Pointer to operator linked list head.
+ * This function compares the priority of the operator from the input
+ * to the priority of the operator in stack.
+ * @param operator Incoming character.
+ * @param **operatorHead Pointer to operator stack.
  */
-void infixToPostfix(char input[], int n, Node **operatorHead)
+void comparePriority(char incomingOperator, StackNode **operatorHead, QueueNode **outputHead, QueueNode **outputTail)
 {
-	int i;
+	StackNode *current, *temp;
+	char inStackOperator;
 
-	// How many elements are in postfixStr[]?
-	// int elemCount = 0;
+	current = *operatorHead;
 
-	// bool isInParenthesis = false;
+	if (stackEmpty(*operatorHead) || current == NULL) {
+		return;
+	} else {
+		inStackOperator = current->data;
 
-	// Initialize empty buffer.
-	// Buffer is used to store operands of > 1 length (21, 305, etc.).
-	char buffer[MAX_STRING_LEN] = "\0";
+		// Is there a more elegant way to do this?
+		while (!stackEmpty(*operatorHead) && priority(inStackOperator, 's') > priority(incomingOperator, 'c')) {
+			if (!stackEmpty(*operatorHead)) {
+				// While there's an operator in the stack with a higher priority to the incoming one,
+				// Enqueue that into the output and pop it from the stack.
+				enqueue(outputHead, outputTail, &inStackOperator);
 
-	// Set in-stack priority to 0 because it's blank.
-	int incomingPriority, inStackPriority = 0;
+				temp = current;
+				current = current->next;
+				pop(&temp);
 
-	// Current Node for iterating through each element in the linked list.
-	Node *current;
-
-	// TODO: Complete the logic for postfix conversion.
-	// TODO: Determine if output should be a string/array or linked list.
-	//
-	// # String/array
-	// Pros: easier access
-	// Cons: can't easily set multi-digit numbers. Can't do integer array either because we need to represent operators in output as well.
-	//
-	// # Linked list
-	// Pros: multi-digit numbers.
-	// Cons: need to create another version of node/recreate node structure because it only accommodates one char in data.
-	for (i = 0; i < n; i++) {
-		// Check if input char is digit.
-		if (isdigit(input[i])) {
-			strncat(buffer, &input[i], 1);
-		} else if (!isdigit(input[i]) && input[i] != ')') { // Second condition likely temporary.
-			// If operator is found, print operand currently in the buffer.
-			printf("%s ", buffer);
-
-			// Clear buffer.
-			strcpy(buffer, "");
-
-			// Set incoming priority based on current character.
-			incomingPriority = operatorPriority(input[i], 'c');
-
-			// Set in-stack priority if stack is not empty.
-			if (!isEmpty(*operatorHead)) {
-				inStackPriority = operatorPriority((*operatorHead)->data[0], 's');
-			} else {
-				initializeList(operatorHead, &input[i]);
-			}
-
-			// If incoming priority is greater than in-stack priority, print to screen.
-			if (incomingPriority > inStackPriority) {
-				printf("%c ", input[i]);
-			} else { // Otherwise, push to stack. Not sure where to pop().
-				push(operatorHead, &input[i]);
+				// Set the in-stack operator to the current node's data.
+				inStackOperator = current->data;
 			}
 		}
 	}
+}
 
-	// Print last character in buffer.
-	printf("%s ", buffer);
-	// Clear buffer.
-	strcpy(buffer, "");
+/*
+ * infixToPostfix() takes an input string in infix notation, like: 1+2*3
+ * and converts it to postfix notation, like so: 1 2 3 * +.
+ * Constraints: Input string must be formatted correctly with no spaces or line breaks. Invalid operators are not allowed.
+ * @param input[] Input string in infix form.
+ * @param **operatorHead Pointer to head of operator stack.
+ * @param **outputHead Pointer to head of output queue.
+ * @param **outputTail Pointer ot tail of output queue.
+ */
+void infixToPostfix(char input[], StackNode **operatorHead, QueueNode **outputHead, QueueNode **outputTail)
+{
+	int i;
+	int inputLength = strlen(input);
 
-	// Print all remaining operators in stack when input is empty.
+	// A buffer is used to keep operands of > 1 digit together, to be enqueued as one element.
+	char buffer[MAX_STRING_LEN];
+
+	// Each character in the input string is called a "token".
+	char token;
+
+	// In the end, all operators remaining in stack will be popped from stack -> output queue.
+	// To do this, we must iterate through each element, and this tracks which element we're on.
+	StackNode *current;
+
+	// While there are input tokens, read each individual token.
+	for (i = 0; i < inputLength; i++) {
+		token = input[i];
+
+		// If the token is a number, add it to the buffer.
+		if (isdigit(token)) {
+			strncat(buffer, &token, 1);
+		} else { // Otherwise, it's an operator.
+			// Enqueue the element in the buffer into the output queue.
+			enqueue(outputHead, outputTail, buffer);
+
+			// Clear the buffer.
+			strcpy(buffer, "");
+
+			// Compare the priority of the incoming operator from the input and the in-stack operator.
+			comparePriority(token, operatorHead, outputHead, outputTail);
+
+			// Push the incoming operator into the stack.
+			push(operatorHead, token);
+		}
+	}
+
+	// Enqueue last element in buffer to output queue, and clear the buffer.
+	// We do this because the enqueue() function is only called when an operator is found after an operand.
+
+	// Let's trace an input!
+	// Input: 1+22*3
+
+	//                                                                    Input: 1+22*3
+	//                                                                           ^
+	// '1' is read and put into the buffer,                              Buffer: { 1 }
+	//                                                           Operator Stack: { }
+	//                                                             Output Queue: { }
+
+	//                                                                    Input: 1+22*3
+	//                                                                            ^
+	// '+' is read, and because it's not a digit,                        Buffer: { 1 }
+	//                                                           Operator Stack: { }
+	//                                                             Output Queue: { }
+
+	// buffer content is enqueued and buffer is cleared,                 Buffer: { }
+	//                                                           Operator Stack: { }
+	//                                                             Output Queue: { 1 }
+
+	// '+' is compared against operator in stack (there is none)         Buffer: { }
+	//                                                           Operator Stack: { }
+	//                                                             Output Queue: { 1 }
+
+	// so '+' is pushed to stack                                         Buffer: { }
+	//                                                           Operator Stack: { + }
+	//                                                             Output Queue: { 1 }
+
+	//                                                                    Input: 1+22*3
+	//                                                                             ^
+	// then, '2' is read and put into the buffer,                        Buffer: { 2 }
+	//                                                           Operator Stack: { + }
+	//                                                             Output Queue: { 1 }
+
+	//                                                                    Input: 1+22*3
+	//                                                                              ^
+	// then, the next '2' is read and put into the buffer,               Buffer: { 22 }
+	//                                                           Operator Stack: { + }
+	//                                                             Output Queue: { 1 }
+
+	//                                                                    Input: 1+22*3
+	//                                                                               ^
+	// '*' is read, and because it's not a digit,                        Buffer: { 22 }
+	//                                                           Operator Stack: { + }
+	//                                                             Output Queue: { 1 }
+
+	// buffer content is enqueued and buffer is cleared,                 Buffer: {  }
+	//                                                           Operator Stack: { + }
+	//                                                             Output Queue: { 1, 22 }
+
+	// '*' is compared against '+' in stack, but '+' has lower priority  Buffer: { }
+	//                                                           Operator Stack: { + }
+	//                                                             Output Queue: { 1, 22 }
+
+	// so '*' is pushed to stack (remember pushing happens at head)      Buffer: { }
+	//                                                           Operator Stack: { *, + }
+	//                                                             Output Queue: { 1, 22 }
+
+	//                                                                    Input: 1+22*3
+	//                                                                                ^
+	// then, '3' is read and put into the buffer,                        Buffer: { 3 }
+	//                                                           Operator Stack: { *, + }
+	//                                                             Output Queue: { 1, 22 }
+
+	// then, there are no more elements left in input, so enqueue remaining buffer content into output queue.
+	//                                                                   Buffer: { }
+	//                                                           Operator Stack: { *, + }
+	//                                                             Output Queue: { 1, 22, 3 }
+
+	// lastly, pop all remaining elements from operator stack into output queue
+	//                                                                   Buffer: { }
+	//                                                           Operator Stack: { }
+	//                                                             Output Queue: { 1, 22, 3, *, + }
+
+
+	// Enqueue buffer contents into output queue and clear the buffer.
+	if (strcmp(buffer, "") != 0) {
+		enqueue(outputHead, outputTail, buffer);
+		strcpy(buffer, "");
+	}
+
+	// Pop all remaining operators in stack to output queue.
 	current = *operatorHead;
-
 	while (current != NULL) {
-		printf("%s ", current->data);
+		enqueue(outputHead, outputTail, &current->data);
 		current = current->next;
 	}
 
-	printf("\n");
+	// Clear unused nodes to save on memory.
+	clearList(operatorHead);
 }
