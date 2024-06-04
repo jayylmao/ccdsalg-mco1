@@ -64,23 +64,6 @@ int priority(char operator, char mode)
 }
 
 /*
- * printList() prints the contents of a given linked list.
- * @param *head: First element of a linked list.
- */
-void printList(QueueNode *head)
-{
-	QueueNode *current = head;
-
-	// Print data in each node until there is no next node.
-	while (current != NULL) {
-		printf("%s ", current->data);
-		current = current->next;
-	}
-
-	printf("\n");
-}
-
-/*
  * This function compares the priority of the operator from the input
  * to the priority of the operator in stack.
  * @param operator Incoming character.
@@ -93,23 +76,22 @@ void comparePriority(char incomingOperator, StackNode **operatorHead, QueueNode 
 
 	current = *operatorHead;
 
-	if (stackEmpty(*operatorHead) || current == NULL) {
+	if (stackEmpty(*operatorHead)) {
 		return;
 	} else {
 		inStackOperator = current->data;
 
 		// Is there a more elegant way to do this?
-		while (!stackEmpty(*operatorHead) && priority(inStackOperator, 's') > priority(incomingOperator, 'c')) {
-			if (!stackEmpty(*operatorHead)) {
-				// While there's an operator in the stack with a higher priority to the incoming one,
-				// Enqueue that into the output and pop it from the stack.
-				enqueue(outputHead, outputTail, &inStackOperator);
-				pop(&current);
-				current = current->next;
+		// For whatever reason, stackEmpty() doesn't properly check for this.
+		while (current != NULL && priority(inStackOperator, 's') > priority(incomingOperator, 'c')) {
+			// While there's an operator in the stack with a higher priority to the incoming one,
+			// Enqueue that into the output and pop it from the stack.
+			enqueue(outputHead, outputTail, &inStackOperator);
 
-				// Set the in-stack operator to the current node's data.
-				inStackOperator = current->data;
-			}
+			// Set the in-stack operator to the current node's data.
+			inStackOperator = current->data;
+			current = current->next;
+			pop(&current);
 		}
 	}
 }

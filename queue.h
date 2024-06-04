@@ -70,3 +70,20 @@ bool dequeue(QueueNode **headPtr, QueueNode **tailPtr)
 		return true;
 	}
 }
+
+/*
+ * printQueue() prints the contents of a given queue.
+ * @param *head: First element of a queue.
+ */
+void printQueue(QueueNode *head)
+{
+	QueueNode *current = head;
+
+	// Print data in each node until there is no next node.
+	while (current != NULL) {
+		printf("%s ", current->data);
+		current = current->next;
+	}
+
+	printf("\n");
+}

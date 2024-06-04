@@ -34,6 +34,7 @@ int main()
 	while (strcmp(input, "QUIT") != 0) {
 		// Reset head pointer
 		operatorHead = NULL;
+
 		outputHead = NULL;
 		outputTail = NULL;
 
@@ -43,7 +44,7 @@ int main()
 		if (strcmp(input, "QUIT") != 0) {
 			// Call functions to convert from infix to postfix notation.
 			infixToPostfix(input, &operatorHead, &outputHead, &outputTail);
-			printList(outputHead);
+			printQueue(outputHead);
 		}
 	}
 	return 0;

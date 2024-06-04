@@ -90,7 +90,7 @@ void push(StackNode **headPtr, char data)
  * pop() removes the element at the top of the stack.
  * @param StackNode **head: Pointer to first element of the linked list.
  */
-void pop(StackNode **headPtr)
+bool pop(StackNode **headPtr)
 {
 	StackNode *current = *headPtr;
 
@@ -101,7 +101,10 @@ void pop(StackNode **headPtr)
 
 		// Free memory used by current StackNode.
 		free(current);
+		return false;
 	}
+
+	return true;
 }
 
 /*
@@ -122,12 +125,29 @@ StackNode* top(StackNode *head)
 }
 
 /*
- * clearList() pops all elements from a given stack.
+ * printStack() prints the contents of a given queue.
+ * @param *head: First element of a queue.
+ */
+void printStack(StackNode *head)
+{
+	StackNode *current = head;
+
+	// Print data in each node until there is no next node.
+	while (current != NULL) {
+		printf("%c ", current->data);
+		current = current->next;
+	}
+
+	printf("\n");
+}
+
+/*
+ * clearStack() pops all elements from a given stack.
  * @param StackNode **headPtr
 */
-void clearList(StackNode **headPtr)
+void clearStack(StackNode **headPtr)
 {
-	StackNode *current = top(*headPtr);
+	StackNode *current = *headPtr;
 	while (current != NULL) {
 		pop(headPtr);
 	}
