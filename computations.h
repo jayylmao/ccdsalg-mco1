@@ -16,22 +16,30 @@ void computation(QueueNode outputHead){
 			break;
 		case '/':
 			operand1 / operand2;
+			break;
 		case '+':
 			operand1 + operand2;
+			break;
+            
 		case '-':
 			operand1 - operand2;
+            break;
 		case '>':
 			if(operand1 > operand2)
 				//1
 			//else	//0;
-
+			break;
 		case '<':
 			if(operand1 < operand2)
 				//1
 			//else	//0;
+			break;
+
 		case '!':
 			if(operand1 < 1)
 				//0;
+			break;
+
 		default:
 		}
 	
