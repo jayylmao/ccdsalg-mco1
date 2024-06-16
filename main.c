@@ -10,6 +10,12 @@
 #include "queue.h"
 #include "stack.h"
 #include "postfix.h"
+#include "computations.h"
+
+
+// last update 6 / 17 / 24 
+
+
 
 /*
  * main() is a driver program.
@@ -44,8 +50,10 @@ int main()
 		if (strcmp(input, "QUIT") != 0) {
 			// Call functions to convert from infix to postfix notation.
 			infixToPostfix(input, &operatorHead, &outputHead, &outputTail);
+			compute(outputHead);
 			printQueue(outputHead);
 		}
 	}
 	return 0;
 }
+
