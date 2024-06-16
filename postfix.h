@@ -26,15 +26,17 @@ int priority(char operator, char mode)
 		case '(':
 			return 0;
 		case '^':
-			return 4;
+			return 5;
 		case '*':
 		case '/':
-			return 3;
+			return 4;
 		case '+':
 		case '-':
-			return 2;
+			return 3;
 		case '>':
 		case '<':
+			return 2;
+		case '!':
 			return 1;
 		default:
 			return 0;
@@ -43,17 +45,19 @@ int priority(char operator, char mode)
 		switch (operator)
 		{
 		case '(':
-			return 6;
+			return 7;
 		case '^':
-			return 5;
+			return 6;
 		case '*':
 		case '/':
-			return 3;
+			return 4;
 		case '+':
 		case '-':
-			return 2;
+			return 3;
 		case '>':
 		case '<':
+			return 2;
+		case '!':
 			return 1;
 		default:
 			return 0;
@@ -81,17 +85,20 @@ void comparePriority(char incomingOperator, StackNode **operatorHead, QueueNode 
 	} else {
 		inStackOperator = current->data;
 
-		// Is there a more elegant way to do this?
-		// For whatever reason, stackEmpty() doesn't properly check for this.
-		while (current != NULL && priority(inStackOperator, 's') > priority(incomingOperator, 'c')) {
-			// While there's an operator in the stack with a higher priority to the incoming one,
-			// Enqueue that into the output and pop it from the stack.
-			enqueue(outputHead, outputTail, &inStackOperator);
-
-			// Set the in-stack operator to the current node's data.
-			inStackOperator = current->data;
-			current = current->next;
-			pop(&current);
+		if (incomingOperator == '(') {
+			push(operatorHead, incomingOperator);
+		} else if (incomingOperator == ')') {
+			while ((*operatorHead)->data != '(') {
+				current = *operatorHead;
+				inStackOperator = current->data;
+				enqueue(outputHead, outputTail, &inStackOperator);
+				pop(operatorHead);
+			}
+		} else if (priority(incomingOperator, 'c') <= priority(inStackOperator, 's')) {
+			while (!stackEmpty(*operatorHead)) {
+				enqueue(outputHead, outputTail, &(*operatorHead)->data);
+				pop(operatorHead);
+			}
 		}
 	}
 }
