@@ -78,6 +78,9 @@ void comparePriority(char incomingOperator, StackNode **operatorHead, QueueNode 
 	StackNode *current;
 	char inStackOperator;
 
+	// Strings in C require a null character at the end to properly display without garbage values.
+	char buffer[2];
+
 	current = *operatorHead;
 
 	if (stackEmpty(*operatorHead)) {
@@ -91,13 +94,20 @@ void comparePriority(char incomingOperator, StackNode **operatorHead, QueueNode 
 			while ((*operatorHead)->data != '(') {
 				current = *operatorHead;
 				inStackOperator = current->data;
-				enqueue(outputHead, outputTail, &inStackOperator);
+
+				strncpy(buffer, &inStackOperator, 1);
+				enqueue(outputHead, outputTail, buffer);
 				pop(operatorHead);
+
+				strcpy(buffer, "\0");
 			}
 		} else if (priority(incomingOperator, 'c') <= priority(inStackOperator, 's')) {
 			while (!stackEmpty(*operatorHead)) {
-				enqueue(outputHead, outputTail, &(*operatorHead)->data);
+				strncpy(buffer, &inStackOperator, 1);
+				enqueue(outputHead, outputTail, buffer);
 				pop(operatorHead);
+
+				strcpy(buffer, "\0");
 			}
 		}
 	}
