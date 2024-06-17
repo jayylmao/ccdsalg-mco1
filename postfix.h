@@ -24,7 +24,9 @@ int priority(char operator, char mode)
 		switch (operator)
 		{
 		case '(':
-			return 0;
+			return 7;
+		case '!':
+			return 6;
 		case '^':
 			return 5;
 		case '*':
@@ -36,15 +38,15 @@ int priority(char operator, char mode)
 		case '>':
 		case '<':
 			return 2;
-		case '!':
-			return 1;
 		default:
-			return 0;
+			return -1;
 		}
 	} else if (mode == 's') {
 		switch (operator)
 		{
 		case '(':
+			return 8;
+		case '!':
 			return 7;
 		case '^':
 			return 6;
@@ -57,10 +59,8 @@ int priority(char operator, char mode)
 		case '>':
 		case '<':
 			return 2;
-		case '!':
-			return 1;
 		default:
-			return 0;
+			return -1;
 		}
 	} else {
 		return 0;
@@ -86,23 +86,26 @@ void comparePriority(char incomingOperator, StackNode **operatorHead, QueueNode 
 	if (stackEmpty(*operatorHead)) {
 		return;
 	} else {
-		inStackOperator = current->data;
+		if (!stackEmpty(*operatorHead)) {
+			inStackOperator = current->data;
+		}
 
 		if (incomingOperator == '(') {
 			push(operatorHead, incomingOperator);
 		} else if (incomingOperator == ')') {
-			while ((*operatorHead)->data != '(') {
-				current = *operatorHead;
-				inStackOperator = current->data;
+			while (inStackOperator != '(' && current != NULL) {
+				strncpy(buffer, &incomingOperator, 1);
 
-				strncpy(buffer, &inStackOperator, 1);
 				enqueue(outputHead, outputTail, buffer);
 				pop(operatorHead);
+				current = *operatorHead;
 
 				strcpy(buffer, "\0");
 			}
+
+			pop(operatorHead);
 		} else if (priority(incomingOperator, 'c') <= priority(inStackOperator, 's')) {
-			while (!stackEmpty(*operatorHead)) {
+			while (!stackEmpty(*operatorHead) && priority((*operatorHead)->data, 's') >= priority(incomingOperator, 'c')) {
 				strncpy(buffer, &inStackOperator, 1);
 				enqueue(outputHead, outputTail, buffer);
 				pop(operatorHead);
@@ -159,87 +162,14 @@ void infixToPostfix(char input[], StackNode **operatorHead, QueueNode **outputHe
 			// Compare the priority of the incoming operator from the input and the in-stack operator.
 			comparePriority(token, operatorHead, outputHead, outputTail);
 
-			// Push the incoming operator into the stack.
-			push(operatorHead, token);
+			if (token != ')') {
+				push(operatorHead, token);
+			}
 		}
 	}
 
 	// Enqueue last element in buffer to output queue, and clear the buffer.
 	// We do this because the enqueue() function is only called when an operator is found after an operand.
-
-	// Let's trace an input!
-	// Input: 1+22*3
-
-	//                                                                    Input: 1+22*3
-	//                                                                           ^
-	// '1' is read and put into the buffer,                              Buffer: { 1 }
-	//                                                           Operator Stack: { }
-	//                                                             Output Queue: { }
-
-	//                                                                    Input: 1+22*3
-	//                                                                            ^
-	// '+' is read, and because it's not a digit,                        Buffer: { 1 }
-	//                                                           Operator Stack: { }
-	//                                                             Output Queue: { }
-
-	// buffer content is enqueued and buffer is cleared,                 Buffer: { }
-	//                                                           Operator Stack: { }
-	//                                                             Output Queue: { 1 }
-
-	// '+' is compared against operator in stack (there is none)         Buffer: { }
-	//                                                           Operator Stack: { }
-	//                                                             Output Queue: { 1 }
-
-	// so '+' is pushed to stack                                         Buffer: { }
-	//                                                           Operator Stack: { + }
-	//                                                             Output Queue: { 1 }
-
-	//                                                                    Input: 1+22*3
-	//                                                                             ^
-	// then, '2' is read and put into the buffer,                        Buffer: { 2 }
-	//                                                           Operator Stack: { + }
-	//                                                             Output Queue: { 1 }
-
-	//                                                                    Input: 1+22*3
-	//                                                                              ^
-	// then, the next '2' is read and put into the buffer,               Buffer: { 22 }
-	//                                                           Operator Stack: { + }
-	//                                                             Output Queue: { 1 }
-
-	//                                                                    Input: 1+22*3
-	//                                                                               ^
-	// '*' is read, and because it's not a digit,                        Buffer: { 22 }
-	//                                                           Operator Stack: { + }
-	//                                                             Output Queue: { 1 }
-
-	// buffer content is enqueued and buffer is cleared,                 Buffer: {  }
-	//                                                           Operator Stack: { + }
-	//                                                             Output Queue: { 1, 22 }
-
-	// '*' is compared against '+' in stack, but '+' has lower priority  Buffer: { }
-	//                                                           Operator Stack: { + }
-	//                                                             Output Queue: { 1, 22 }
-
-	// so '*' is pushed to stack (remember pushing happens at head)      Buffer: { }
-	//                                                           Operator Stack: { *, + }
-	//                                                             Output Queue: { 1, 22 }
-
-	//                                                                    Input: 1+22*3
-	//                                                                                ^
-	// then, '3' is read and put into the buffer,                        Buffer: { 3 }
-	//                                                           Operator Stack: { *, + }
-	//                                                             Output Queue: { 1, 22 }
-
-	// then, there are no more elements left in input, so enqueue remaining buffer content into output queue.
-	//                                                                   Buffer: { }
-	//                                                           Operator Stack: { *, + }
-	//                                                             Output Queue: { 1, 22, 3 }
-
-	// lastly, pop all remaining elements from operator stack into output queue
-	//                                                                   Buffer: { }
-	//                                                           Operator Stack: { }
-	//                                                             Output Queue: { 1, 22, 3, *, + }
-
 
 	// Enqueue buffer contents into output queue and clear the buffer.
 	if (strcmp(buffer, "\0") != 0) {
