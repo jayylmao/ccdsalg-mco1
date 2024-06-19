@@ -42,25 +42,22 @@ bool stackEmpty(StackNode *head)
 	}
 }
 
-// /*
-//  * initializeList() adds the first element to the top of the stack.
-//  * @param StackNode **head: Pointer to first element of the linked list.
-//  * @param char data: Data to input into the stack.
-//  */
-// void initializeList(StackNode **headPtr, char data[])
-// {
-// 	// Allocate memory to a new StackNode.
-// 	StackNode *newNode = malloc(sizeof(StackNode));
+/*
+ * printStack() prints the contents of a given queue.
+ * @param *head: First element of a queue.
+ */
+void printStack(StackNode *head)
+{
+	StackNode *current = head;
 
-// 	// Set data in new StackNode.
-// 	strcpy(newNode->data, data);
+	// Print data in each node until there is no next node.
+	while (current != NULL) {
+		printf("%c ", current->data);
+		current = current->next;
+	}
 
-// 	// Set next StackNode to pointer to NULL.
-// 	newNode->next = NULL;
-
-// 	// Set head to new StackNode.
-// 	*headPtr = newNode;
-// }
+	printf("\n");
+}
 
 /*
  * push() adds the element to the top of the stack.
@@ -122,23 +119,6 @@ StackNode* top(StackNode *head)
 	}
 
 	return current;
-}
-
-/*
- * printStack() prints the contents of a given queue.
- * @param *head: First element of a queue.
- */
-void printStack(StackNode *head)
-{
-	StackNode *current = head;
-
-	// Print data in each node until there is no next node.
-	while (current != NULL) {
-		printf("%c ", current->data);
-		current = current->next;
-	}
-
-	printf("\n");
 }
 
 /*
