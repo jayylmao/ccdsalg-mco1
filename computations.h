@@ -1,168 +1,76 @@
-int assignValue (char buffer[]){
-	int num=0;
-	for(int i=0; i<strlen(buffer); i++){
-		num = num * 10 + ( buffer[i] - '0' );
+void evaluate(char *operator, int operand1, int operand2, int *result, bool *divisionByZero)
+{
+	*divisionByZero = false;
+	if(strcmp(operator,"^") == 0){
+		*result = pow(operand1, operand2);
+	} else if(strcmp(operator,"*") == 0){
+		*result = operand1 * operand2;
+	} else if(strcmp(operator,"/") == 0){
+		if(operand2 == 0){
+			printf("Division by zero error!");
+			*divisionByZero = true;}
+		else
+			*result = operand1 / operand2;
+	} else if(strcmp(operator,"+") == 0){
+		*result = operand1 + operand2;
+	} else if(strcmp(operator,"-") == 0){
+		*result = operand1 - operand2;
+	} else if(strcmp(operator,">") == 0){
+		*result = operand1 > operand2;
+	} else if(strcmp(operator,"<") == 0){
+		*result = operand1 < operand2;
+	} else if(strcmp(operator,">=")  == 0){
+		*result = operand1 > operand2 || operand1 == operand2;
+	} else if(strcmp(operator,"<=")== 0){
+		*result = operand1 < operand2 || operand1 == operand2;
+	} else if(strcmp(operator,"!=") == 0){
+		*result = operand1 != operand2;
+	} else if(strcmp(operator,"==") == 0){
+		*result = operand1 == operand2;
+	} else if(strcmp(operator, "&&")== 0){
+		*result = operand1 && operand2;
+	} else if(strcmp(operator,"||") == 0){
+		*result = operand1 || operand2;
+	} else if(strcmp(operator,"!") == 0){
+		*result = !operand1;
 	}
-	return num;
 }
 
+void evaluatePostfix(StackNode **operatorHead, QueueNode **outputHead, QueueNode **outputTail)
+{
+	// Create a stack of operands.
+	StackNode *operandStack;
 
-void computation(StackNode **operatorHead, QueueNode **outputHead, QueueNode **outputTail){
+	// Set current to queue head.
 	QueueNode *current = *outputHead;
-	char buffer[MAX_STRING_LEN];
-	strcpy(buffer, "\0");
-	float temp=0;
-	int operand1, operand2;
-	
-	strcat(buffer, current->data);
-	if(isdigit(buffer[0])){ 
-		operand1 = assignValue(buffer);
-		strcpy(buffer, "\0");
-	}
-	
-	
-	current = current->next;
-	strcat(buffer, current->data);
 
-	if(isdigit(buffer[0])){ 
-		operand2 = assignValue(buffer);
-		strcpy(buffer, "\0");
-	}
+	// When operands are popped, they go here.
+	int operands[2];
 
-	// can delete in later stages
-	printf("operand1: %d\n", operand1);
-	printf("operand2: %d\n", operand2);
+	bool divisionByZero = false;
+	int result;
 
-	current = current->next;
+	char buffer[MAX_STRING_LEN] = "/0";
 
-	
-	char tempoperator = current;
-	char operator[2]; 
-	strcpy(operator,"\0");
-	strncpy(operator, &tempoperator, 1);
-	
-	
+	// Iterate through queue.
+	while (current != NULL) {
+		// atoi() only returns 0 if the input is a letter.
+		if (atoi(current->data) != 0 || strcmp(current->data, "0") == 0) {
+			push(&operandStack, current->data);
+		} else {
+			operands[1] = atoi(operandStack->data);
+			pop(&operandStack);
+			operands[0] = atoi(operandStack->data);
+			pop(&operandStack);
 
-
-	printf("%s", operator);
-
-	if(strcmp(operator,"^")==0){
-		temp = pow(operand1, operand2);
-	}
-	
-	else if(strcmp(operator,"*")==0){
-		temp = operand1 * operand2;
-	}
-
-	else if(strcmp(operator,"/")==0){
-		if(operand2 == 0)
-			printf("Division by zero error!");
-		else
-			temp = operand1 / operand2;
-	}
-
-	else if(strcmp(operator,"+")==0){
-		temp = operand1 + operand2;
-	}
-
-	else if(strcmp(operator,"-")==0){
-		temp = operand1 - operand2;
-	}
-
-	else if(strcmp(operator,">")==0){
-		temp = operand1 > operand2;
-	}
-
-	else if(strcmp(operator,"<")==0){
-		temp = operand1 < operand2;
-	}
-
-	else if(strcmp(operator,">=")==0){
-		temp = operand1 > operand2 || operand1 == operand2;
-	 	
-	}			
-	else if(strcmp(operator,"<=")==0){
-		temp = operand1 < operand2 || operand1 == operand2;
-	}
-	else if(strcmp(operator,"!=")==0){
-		temp = operand1 != operand2;
-	}
-
-	else if(strcmp(operator,"==")==0){
-		temp = operand1 == operand2;
-	}	
-
-	else if(strcmp(operator, "&&")==0){
-		temp = operand1 && operand2;
-	}
-
-	else if(strcmp(operator,"||")==0){
-		temp = operand1 || operand2;
-	}
-
-	else if(strcmp(operator,"!")==0){
-		temp = !operand1;
-	}
-	
-
-
-		dequeue(outputHead, outputTail);
-		printf("new queue: ");
-		printQueue(*outputHead);
+			evaluate(current->data, operands[0], operands[1], &result, &divisionByZero);
+			sprintf(buffer, "%d", result);
+			push(&operandStack, buffer);
+			strcpy(buffer, "\0");
+		}
 
 		current = current->next;
-		strcat(buffer, current->data);
-		if(isdigit(buffer[0]))
-			printf("%s", buffer);
+	}
 
-
-
-	
-	
-	printf("temp = %f\n", temp);
-	
-	temp = 0;
-
+	printf("%d\n", result);
 }
-
-// switch (operator)
-	// 	{
-	// 	case '^':
-	// 		temp = pow(operand1, operand2);
-	// 		break;
-
-	// 	case '*':
-	// 		temp = operand1 * operand2;
-	// 		break;
-
-	// 	case '/':
-	// 		temp = operand1 / (float) operand2;
-	// 		break;
-
-	// 	case '+':
-	// 		temp = operand1 + operand2;
-	// 		break;
-            
-	// 	case '-':
-	// 		temp = operand1 - operand2;
-    //         break;
-
-	// 	case '>':
-	// 		if(operand1 > operand2)
-	// 			temp = 1;
-	// 		else
-	// 			temp = 0;
-	// 		break;
-
-	// 	case '<':
-	// 		if(operand1 < operand2)
-	// 			//1
-	// 		//else	//0;
-	// 		break;
-
-	// 	case '!':
-	// 		if(operand1 < 1)
-	// 			temp = 0;
-	// 		break;
-
-	// 	default:

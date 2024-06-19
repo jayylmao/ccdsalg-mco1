@@ -12,11 +12,6 @@
 #include "postfix.h"
 #include "computations.h"
 
-
-// last update 6 / 17 / 24 
-
-
-
 /*
  * main() is a driver program.
  * @return Program exit status.
@@ -50,10 +45,9 @@ int main()
 		if (strcmp(input, "QUIT") != 0) {
 			// Call functions to convert from infix to postfix notation.
 			infixToPostfix(input, &operatorHead, &outputHead, &outputTail);
-			compute(outputHead);
 			printQueue(outputHead);
+			evaluatePostfix(&operatorHead, &outputHead, &outputTail);
 		}
 	}
 	return 0;
 }
-
