@@ -9,55 +9,55 @@
  */
 int priority(char* operator, char mode)
 {
-	if (mode == 'c') {
+	if (mode == 's') {
 		if (strcmp(operator, "!") == 0) {
-			return 9;
-		} else if (strcmp(operator, "(") == 0) {
-			return 8;
+			return 6;
 		} else if (strcmp(operator, "^") == 0) {
-			return 7;
+			return 5;
 		} else if (strcmp(operator, "*") == 0 ||
 				   strcmp(operator, "/") == 0 ||
 				   strcmp(operator, "\%") == 0) {
-			return 6;
+			return 4;
 		} else if (strcmp(operator, "+") == 0 ||
 				   strcmp(operator, "-") == 0) {
-			return 5;
+			return 3;
 		} else if (strcmp(operator, ">") == 0 ||
 				   strcmp(operator, "<") == 0 ||
 				   strcmp(operator, "<=") == 0 ||
 				   strcmp(operator, ">=") == 0 ||
 				   strcmp(operator, "!=") == 0) {
-			return 4;
+			return 2;
 		} else if (strcmp(operator, "&&") == 0 ||
 				   strcmp(operator, "||") == 0) {
-			return 2;
+			return 1;
+		} else if (strcmp(operator, "(") == 0) {
+			return 0;
 		} else {
 			return -1;
 		}
-	} else if (mode == 's') {
-		if (strcmp(operator, "^") == 0) {
-			return 6;
+	} else if (mode == 'c') {
+		if (strcmp(operator, "!") == 0) {
+			return 8;
+		} else if (strcmp(operator, "(") == 0) {
+			return 7;
+		} else if (strcmp(operator, "^") == 0) {
+			return 5;
 		} else if (strcmp(operator, "*") == 0 ||
 				   strcmp(operator, "/") == 0 ||
 				   strcmp(operator, "\%") == 0) {
-			return 5;
+			return 4;
 		} else if (strcmp(operator, "+") == 0 ||
 				   strcmp(operator, "-") == 0) {
-			return 4;
+			return 3;
 		} else if (strcmp(operator, ">") == 0 ||
 				   strcmp(operator, "<") == 0 ||
 				   strcmp(operator, "<=") == 0 ||
 				   strcmp(operator, ">=") == 0 ||
 				   strcmp(operator, "!=") == 0) {
-			return 3;
+			return 2;
 		} else if (strcmp(operator, "&&") == 0 ||
 				   strcmp(operator, "||") == 0) {
-			return 2;
-		} else if (strcmp(operator, "(") == 0) {
 			return 1;
-		} else if (strcmp(operator, "!") == 0) {
-			return 0;
 		} else {
 			return -1;
 		}
