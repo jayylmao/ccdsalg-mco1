@@ -45,7 +45,9 @@ int main()
 		if (strcmp(input, "QUIT") != 0) {
 			// Call functions to convert from infix to postfix notation.
 			infixToPostfix(input, &operatorHead, &outputHead, &outputTail);
+			// Print the postfix expression
 			printQueue(outputHead);
+			// Print the result of the evaluated expression
 			evaluatePostfix(&operatorHead, &outputHead, &outputTail);
 		}
 	}
