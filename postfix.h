@@ -54,10 +54,10 @@ int priority(char* operator, char mode)
 		} else if (strcmp(operator, "&&") == 0 ||
 				   strcmp(operator, "||") == 0) {
 			return 2;
-		} else if (strcmp(operator, "!") == 0) {
-			return 0;
 		} else if (strcmp(operator, "(") == 0) {
 			return 1;
+		} else if (strcmp(operator, "!") == 0) {
+			return 8;
 		} else {
 			return -1;
 		}

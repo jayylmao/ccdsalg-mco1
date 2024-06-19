@@ -57,6 +57,15 @@ void evaluatePostfix(StackNode **operatorHead, QueueNode **outputHead, QueueNode
 		// atoi() only returns 0 if the input is a letter.
 		if (atoi(current->data) != 0 || strcmp(current->data, "0") == 0) {
 			push(&operandStack, current->data);
+		} else if (strcmp(current->data, "!") == 0){
+			operands[0] = atoi(operandStack->data);
+			pop(&operandStack);
+			operands[1] = 1;
+
+			evaluate(current->data, operands[0], operands[1], &result, &divisionByZero);
+			sprintf(buffer, "%d", result);
+			push(&operandStack, buffer);
+			strcpy(buffer, "\0");
 		} else {
 			operands[1] = atoi(operandStack->data);
 			pop(&operandStack);
@@ -71,6 +80,6 @@ void evaluatePostfix(StackNode **operatorHead, QueueNode **outputHead, QueueNode
 
 		current = current->next;
 	}
-
+if(!divisionByZero)
 	printf("%d\n", result);
 }
