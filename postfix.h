@@ -7,48 +7,56 @@
  * @param mode: Changes return value based on whether operator to check is in-stack (s) or incoming (c).
  * @return Integer priority value.
  */
-int priority(char operator, char mode)
+int priority(char* operator, char mode)
 {
 	if (mode == 'c') {
-		switch (operator)
-		{
-		case '!':
+		if (strcmp(operator, "!") == 0) {
+			return 9;
+		} else if (strcmp(operator, "(") == 0) {
+			return 8;
+		} else if (strcmp(operator, "^") == 0) {
 			return 7;
-		case '(':
+		} else if (strcmp(operator, "*") == 0 ||
+				   strcmp(operator, "/") == 0) {
 			return 6;
-		case '^':
+		} else if (strcmp(operator, "+") == 0 ||
+				   strcmp(operator, "-") == 0) {
 			return 5;
-		case '*':
-		case '/':
+		} else if (strcmp(operator, ">") == 0 ||
+				   strcmp(operator, "<") == 0 ||
+				   strcmp(operator, "<=") == 0 ||
+				   strcmp(operator, ">=") == 0 ||
+				   strcmp(operator, "!=") == 0) {
 			return 4;
-		case '+':
-		case '-':
-			return 3;
-		case '>':
-		case '<':
+		} else if (strcmp(operator, "&&") == 0 ||
+				   strcmp(operator, "||") == 0) {
 			return 2;
-		default:
+		} else {
 			return -1;
 		}
 	} else if (mode == 's') {
-		switch (operator)
-		{
-		case '!':
-			return 0;
-		case '^':
+		if (strcmp(operator, "^") == 0) {
 			return 6;
-		case '*':
-		case '/':
+		} else if (strcmp(operator, "*") == 0 ||
+				   strcmp(operator, "/") == 0) {
+			return 5;
+		} else if (strcmp(operator, "+") == 0 ||
+				   strcmp(operator, "-") == 0) {
 			return 4;
-		case '+':
-		case '-':
+		} else if (strcmp(operator, ">") == 0 ||
+				   strcmp(operator, "<") == 0 ||
+				   strcmp(operator, "<=") == 0 ||
+				   strcmp(operator, ">=") == 0 ||
+				   strcmp(operator, "!=") == 0) {
 			return 3;
-		case '>':
-		case '<':
+		} else if (strcmp(operator, "&&") == 0 ||
+				   strcmp(operator, "||") == 0) {
 			return 2;
-		case '(':
+		} else if (strcmp(operator, "!") == 0) {
+			return 0;
+		} else if (strcmp(operator, "(") == 0) {
 			return 1;
-		default:
+		} else {
 			return -1;
 		}
 	} else {
@@ -62,43 +70,34 @@ int priority(char operator, char mode)
  * @param operator Incoming character.
  * @param **operatorHead Pointer to operator stack.
  */
-void comparePriority(char incomingOperator, StackNode **operatorHead, QueueNode **outputHead, QueueNode **outputTail)
+void comparePriority(char* incomingOperator, StackNode **operatorHead, QueueNode **outputHead, QueueNode **outputTail)
 {
 	StackNode *current;
-	char inStackOperator;
-
-	// Strings in C require a null character at the end to properly display without garbage values.
-	char buffer[3];
+	char inStackOperator[3];
 
 	current = *operatorHead;
 
-	if (stackEmpty(*operatorHead) && incomingOperator != '!') {
+	if (stackEmpty(*operatorHead) && strcmp(incomingOperator, "!") != 0) {
 		return;
 	} else {
 		if (!stackEmpty(*operatorHead)) {
-			inStackOperator = current->data;
+			strncpy(inStackOperator, current->data, strlen(inStackOperator));
 		}
 
 		// If a right parenthesis is found,
-		if (incomingOperator == ')') {
+		if (strcmp(incomingOperator, ")") == 0) {
 			// Pop all operators into the queue until a left parenthesis is found.
-			while ((*operatorHead)->data != '(' && current != NULL) {
-				strncpy(buffer, &inStackOperator, 1);
-
-				enqueue(outputHead, outputTail, buffer);
-				strcpy(buffer, "\0");
+			while (strcmp((*operatorHead)->data, "(") != 0 && current != NULL) {
+				enqueue(outputHead, outputTail, inStackOperator);
 				pop(operatorHead);
 			}
 
 			pop(operatorHead);
-		} else if (priority(inStackOperator, 's') >= (priority(incomingOperator, 'c') && inStackOperator != '(')) {
+		} else if (priority(inStackOperator, 's') >= (priority(incomingOperator, 'c') &&
+				   strcmp(inStackOperator, "(") != 0)) {
 			while (!stackEmpty(*operatorHead) && priority((*operatorHead)->data, 's') >= priority(incomingOperator, 'c')) {
-				strncpy(buffer, &inStackOperator, 1);
-
-				enqueue(outputHead, outputTail, buffer);
+				enqueue(outputHead, outputTail, inStackOperator);
 				pop(operatorHead);
-
-				strcpy(buffer, "\0");
 			}
 		}
 	}
@@ -119,12 +118,8 @@ void infixToPostfix(char input[], StackNode **operatorHead, QueueNode **outputHe
 	int inputLength = strlen(input);
 
 	// A buffer is used to keep operands of > 1 digit together, to be enqueued as one element.
-	char buffer[MAX_STRING_LEN];
-
-	// When using strcpy() to copy a single character over,
-	// it will copy additional garbage data unless there is a
-	// null terminator, so we need to put the char in a string before enqueueing.
-	char enqueueBuffer[2];
+	char buffer[MAX_STRING_LEN] = "\0";
+	char operatorBuffer[2];
 
 	// Each character in the input string is called a "token".
 	char token;
@@ -141,20 +136,23 @@ void infixToPostfix(char input[], StackNode **operatorHead, QueueNode **outputHe
 		if (isdigit(token)) {
 			strncat(buffer, &token, 1);
 		} else { // Otherwise, it's an operator.
-			// Enqueue the element in the buffer into the output queue.
-			if (strcmp(buffer, "") != 0) {
+			// Enqueue the element in the buffer into the output queue as long as the buffer isn't empty.
+			if (strcmp(buffer, "\0") != 0) {
 				enqueue(outputHead, outputTail, buffer);
 			}
 
 			// Clear the buffer.
-			strcpy(buffer, "\0");
+			strncpy(buffer, "\0", 1);
 
 			// Compare the priority of the incoming operator from the input and the in-stack operator.
-			comparePriority(token, operatorHead, outputHead, outputTail);
+			comparePriority(&token, operatorHead, outputHead, outputTail);
 
 			// Push operator to stack as long as it is not a parenthesis.
 			if (token != ')') {
-				push(operatorHead, token);
+				strncpy(operatorBuffer, &token, 1);
+				printf("%s\n", operatorBuffer);
+				push(operatorHead, operatorBuffer);
+				strncpy(operatorBuffer, "\0", 1);
 			}
 		}
 	}
@@ -173,8 +171,7 @@ void infixToPostfix(char input[], StackNode **operatorHead, QueueNode **outputHe
 	while (current != NULL) {
 		// Removing this buffer will result in garbage data being copied over,
 		// alongside the operator.
-		enqueueBuffer[0] = current->data;
-		enqueue(outputHead, outputTail, enqueueBuffer);
-		current = current->next;
+		enqueue(outputHead, outputTail, current->data);
+		pop(&current);
 	}
 }
