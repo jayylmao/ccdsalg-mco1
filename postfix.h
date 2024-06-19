@@ -17,7 +17,8 @@ int priority(char* operator, char mode)
 		} else if (strcmp(operator, "^") == 0) {
 			return 7;
 		} else if (strcmp(operator, "*") == 0 ||
-				   strcmp(operator, "/") == 0) {
+				   strcmp(operator, "/") == 0 ||
+				   strcmp(operator, "\%") == 0) {
 			return 6;
 		} else if (strcmp(operator, "+") == 0 ||
 				   strcmp(operator, "-") == 0) {
@@ -38,7 +39,8 @@ int priority(char* operator, char mode)
 		if (strcmp(operator, "^") == 0) {
 			return 6;
 		} else if (strcmp(operator, "*") == 0 ||
-				   strcmp(operator, "/") == 0) {
+				   strcmp(operator, "/") == 0 ||
+				   strcmp(operator, "\%") == 0) {
 			return 5;
 		} else if (strcmp(operator, "+") == 0 ||
 				   strcmp(operator, "-") == 0) {
@@ -73,30 +75,24 @@ int priority(char* operator, char mode)
 void comparePriority(char* incomingOperator, StackNode **operatorHead, QueueNode **outputHead, QueueNode **outputTail)
 {
 	StackNode *current;
-	char inStackOperator[3];
 
 	current = *operatorHead;
 
 	if (stackEmpty(*operatorHead) && strcmp(incomingOperator, "!") != 0) {
 		return;
 	} else {
-		if (!stackEmpty(*operatorHead)) {
-			strncpy(inStackOperator, current->data, strlen(inStackOperator));
-		}
-
 		// If a right parenthesis is found,
 		if (strcmp(incomingOperator, ")") == 0) {
 			// Pop all operators into the queue until a left parenthesis is found.
 			while (strcmp((*operatorHead)->data, "(") != 0 && current != NULL) {
-				enqueue(outputHead, outputTail, inStackOperator);
+				enqueue(outputHead, outputTail, (*operatorHead)->data);
 				pop(operatorHead);
 			}
 
 			pop(operatorHead);
-		} else if (priority(inStackOperator, 's') >= (priority(incomingOperator, 'c') &&
-				   strcmp(inStackOperator, "(") != 0)) {
+		} else if (priority((*operatorHead)->data, 's') >= (priority(incomingOperator, 'c') && strcmp((*operatorHead)->data, "(") != 0)) {
 			while (!stackEmpty(*operatorHead) && priority((*operatorHead)->data, 's') >= priority(incomingOperator, 'c')) {
-				enqueue(outputHead, outputTail, inStackOperator);
+				enqueue(outputHead, outputTail, (*operatorHead)->data);
 				pop(operatorHead);
 			}
 		}
@@ -150,7 +146,6 @@ void infixToPostfix(char input[], StackNode **operatorHead, QueueNode **outputHe
 			// Push operator to stack as long as it is not a parenthesis.
 			if (token != ')') {
 				strncpy(operatorBuffer, &token, 1);
-				printf("%s\n", operatorBuffer);
 				push(operatorHead, operatorBuffer);
 				strncpy(operatorBuffer, "\0", 1);
 			}

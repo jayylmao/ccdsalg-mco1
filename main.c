@@ -10,6 +10,7 @@
 #include "queue.h"
 #include "stack.h"
 #include "postfix.h"
+#include "compute.h"
 
 /*
  * main() is a driver program.
