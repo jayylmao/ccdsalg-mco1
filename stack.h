@@ -4,7 +4,7 @@
 
 // StackNode structure for each element in the stack/linked list.
 struct StackNode {
-	char data;
+	char data[MAX_STRING_LEN];
 	struct StackNode* next;
 };
 
@@ -52,7 +52,7 @@ void printStack(StackNode *head)
 
 	// Print data in each node until there is no next node.
 	while (current != NULL) {
-		printf("%c ", current->data);
+		printf("%s ", current->data);
 		current = current->next;
 	}
 
@@ -64,7 +64,7 @@ void printStack(StackNode *head)
  * @param StackNode **head: Pointer to first element of the linked list.
  * @param char data: Data to input into the stack.
  */
-void push(StackNode **headPtr, char data)
+void push(StackNode **headPtr, char* data)
 {
 	// Allocate memory to a new StackNode.
 	StackNode *newNode = malloc(sizeof(StackNode));
@@ -77,7 +77,7 @@ void push(StackNode **headPtr, char data)
 	}
 
 	// Set data in new StackNode.
-	newNode->data = data;
+	strcpy(newNode->data, data);
 
 	// Set head to new StackNode.
 	*headPtr = newNode;
