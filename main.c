@@ -32,7 +32,7 @@ int main()
 
 	// User must type "QUIT" to exit the program.
 	while (strcmp(input, "QUIT") != 0) {
-		// Reset head pointer
+		// Reset head pointer.
 		operatorHead = NULL;
 
 		outputHead = NULL;

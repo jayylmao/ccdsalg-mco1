@@ -23,6 +23,23 @@ bool queueEmpty(QueueNode **headPtr, QueueNode **tailPtr)
 }
 
 /*
+ * printQueue() prints the contents of a given queue.
+ * @param *head: First element of a queue.
+ */
+void printQueue(QueueNode *head)
+{
+	QueueNode *current = head;
+
+	// Print data in each node until there is no next node.
+	while (current != NULL) {
+		printf("%s ", current->data);
+		current = current->next;
+	}
+
+	printf("\n");
+}
+
+/*
  * enqueue() adds a node to the tail of the queue.
  * @param **headPtr Pointer to the head of the queue.
  * @param **tailPtr Pointer to hte tail of the queue.
@@ -69,21 +86,4 @@ bool dequeue(QueueNode **headPtr, QueueNode **tailPtr)
 		free(temp);
 		return true;
 	}
-}
-
-/*
- * printQueue() prints the contents of a given queue.
- * @param *head: First element of a queue.
- */
-void printQueue(QueueNode *head)
-{
-	QueueNode *current = head;
-
-	// Print data in each node until there is no next node.
-	while (current != NULL) {
-		printf("%s ", current->data);
-		current = current->next;
-	}
-
-	printf("\n");
 }
