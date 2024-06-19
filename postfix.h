@@ -57,7 +57,7 @@ int priority(char* operator, char mode)
 		} else if (strcmp(operator, "(") == 0) {
 			return 1;
 		} else if (strcmp(operator, "!") == 0) {
-			return 8;
+			return 0;
 		} else {
 			return -1;
 		}
@@ -81,8 +81,8 @@ void comparePriority(char* incomingOperator, StackNode **operatorHead, QueueNode
 	if (stackEmpty(*operatorHead) && strcmp(incomingOperator, "!") != 0) {
 		return;
 	} else {
-		// If a right parenthesis is found,
 		if (strcmp(incomingOperator, ")") == 0) {
+			// If a right parenthesis is found,
 			// Pop all operators into the queue until a left parenthesis is found.
 			while (strcmp((*operatorHead)->data, "(") != 0 && current != NULL) {
 				enqueue(outputHead, outputTail, (*operatorHead)->data);
@@ -90,7 +90,10 @@ void comparePriority(char* incomingOperator, StackNode **operatorHead, QueueNode
 			}
 
 			pop(operatorHead);
-		} else if (priority((*operatorHead)->data, 's') >= (priority(incomingOperator, 'c') && strcmp((*operatorHead)->data, "(") != 0)) {
+		} else if (strcmp(incomingOperator, "!") == 0) {
+			return;
+		} else if ((priority((*operatorHead)->data, 's') >= (priority(incomingOperator, 'c')) &&
+				   strcmp((*operatorHead)->data, "(") != 0)) {
 			while (!stackEmpty(*operatorHead) && priority((*operatorHead)->data, 's') >= priority(incomingOperator, 'c')) {
 				enqueue(outputHead, outputTail, (*operatorHead)->data);
 				pop(operatorHead);
@@ -131,6 +134,27 @@ void infixToPostfix(char input[], StackNode **operatorHead, QueueNode **outputHe
 		// If the token is a number, add it to the buffer.
 		if (isdigit(token)) {
 			strncat(buffer, &token, 1);
+		} else if ((token == '<' && input[i + 1] == '=') ||
+				   (token == '>' && input[i + 1] == '=') ||
+				   (token == '!' && input[i + 1] == '=') ||
+				   (token == '=' && input[i + 1] == '=') ||
+				   (token == '|' && input[i + 1] == '|') ||
+				   (token == '&' && input[i + 1] == '&')) {
+			// Enqueue the element in the buffer into the output queue as long as the buffer isn't empty.
+			if (strcmp(buffer, "\0") != 0) {
+				enqueue(outputHead, outputTail, buffer);
+			}
+
+			// Clear the buffer.
+			strncpy(buffer, "\0", 1);
+
+			// Since we want to add multiple tokens at once, we put them in a buffer, like with multi-digit
+			sprintf(buffer, "%c%c", token, input[i + 1]);
+			comparePriority(buffer, operatorHead, outputHead, outputTail);
+			push(operatorHead, buffer);
+
+			strncpy(buffer, "\0", 1);
+			i++;
 		} else { // Otherwise, it's an operator.
 			// Enqueue the element in the buffer into the output queue as long as the buffer isn't empty.
 			if (strcmp(buffer, "\0") != 0) {

@@ -7,10 +7,10 @@ void evaluate(char *operator, int operand1, int operand2, int *result, bool *div
 		*result = operand1 * operand2;
 	} else if(strcmp(operator,"/") == 0){
 		if(operand2 == 0){
-			printf("Division by zero error!");
-			*divisionByZero = true;}
-		else
+			*divisionByZero = true;
+		} else {
 			*result = operand1 / operand2;
+		}
 	} else if(strcmp(operator,"+") == 0){
 		*result = operand1 + operand2;
 	} else if(strcmp(operator,"-") == 0){
@@ -80,6 +80,10 @@ void evaluatePostfix(StackNode **operatorHead, QueueNode **outputHead, QueueNode
 
 		current = current->next;
 	}
-if(!divisionByZero)
-	printf("%d\n", result);
+
+	if(!divisionByZero) {
+		printf("%d\n", result);
+	} else {
+		printf("Division by zero error!\n");
+	}
 }
