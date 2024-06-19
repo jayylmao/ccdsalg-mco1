@@ -1,5 +1,5 @@
 /*
- * This function evaluates the expression between two operands and the operator 
+ * This function evaluates the expression between two operands and the operator
  * @param operator The operation to be applied to the expression
  * @param operand1 First operand in the expression.
  * @param operand2 Second operand in the expression.
@@ -13,7 +13,7 @@ void evaluate(char *operator, int operand1, int operand2, int *result, bool *div
 
 	// If statements to look for which operation to be used based on the operator
 	if(strcmp(operator,"^") == 0){				// exponential
-		*result = pow(operand1, operand2); 	
+		*result = pow(operand1, operand2);
 	} else if(strcmp(operator,"*") == 0){		// multiplication
 		*result = operand1 * operand2;
 	} else if(strcmp(operator,"/") == 0){		// division
@@ -31,10 +31,10 @@ void evaluate(char *operator, int operand1, int operand2, int *result, bool *div
 	} else if(strcmp(operator,"<") == 0){		// greater than
 		*result = operand1 < operand2;
 	} else if(strcmp(operator,">=")  == 0){		// less than or equal
-		*result = operand1 > operand2 || 
+		*result = operand1 > operand2 ||
 				  operand1 == operand2;
 	} else if(strcmp(operator,"<=")== 0){		// greater than or equal
-		*result = operand1 < operand2 || 
+		*result = operand1 < operand2 ||
 				  operand1 == operand2;
 	} else if(strcmp(operator,"!=") == 0){		// non-equality
 		*result = operand1 != operand2;
@@ -52,11 +52,10 @@ void evaluate(char *operator, int operand1, int operand2, int *result, bool *div
 /*
  * evaluatePostfix() takes the queue that contains the postfix expression, like so: 1 2 3 * +
  * and evaluates it, like so: 6.
- * @param **operatorHead Pointer to head of operator stack.
  * @param **outputHead Pointer to head of output queue.
  * @param **outputTail Pointer ot tail of output queue.
  */
-void evaluatePostfix(StackNode **operatorHead, QueueNode **outputHead, QueueNode **outputTail)
+void evaluatePostfix(QueueNode **outputHead, QueueNode **outputTail)
 {
 	// Create a stack of operands.
 	StackNode *operandStack;
@@ -79,12 +78,12 @@ void evaluatePostfix(StackNode **operatorHead, QueueNode **outputHead, QueueNode
 		if (atoi(current->data) != 0 || strcmp(current->data, "0") == 0) {
 			push(&operandStack, current->data);
 		// If the incoming data is the operator, we assign the operands then evaluate the 2 operands with the operator
-		} else { 
+		} else {
 			// If the operator is a logical NOT, the top operand in the stack is assigned to the first operand
 			if (strcmp(current->data, "!") == 0){
 				operands[0] = atoi(operandStack->data);
 				pop(&operandStack);
-			// Else the top operand in the stack is assigned to the 2nd operand and 
+			// Else the top operand in the stack is assigned to the 2nd operand and
 			// the next operand is assigned to the 1st operand then evaluate using the operator
 			}else {
 				operands[1] = atoi(operandStack->data);

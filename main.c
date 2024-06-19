@@ -48,7 +48,7 @@ int main()
 			// Print the postfix expression
 			printQueue(outputHead);
 			// Print the result of the evaluated expression
-			evaluatePostfix(&operatorHead, &outputHead, &outputTail);
+			evaluatePostfix(&outputHead, &outputTail);
 		}
 	}
 	return 0;
