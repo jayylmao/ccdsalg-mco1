@@ -76,6 +76,9 @@ void evaluatePostfix(QueueNode **outputHead, QueueNode **outputTail)
 
 	bool divisionByZero = false;
 	int result;
+	
+	// Initialize result with first node data.
+	result = atoi((*outputHead)->data);
 
 	char buffer[MAX_STRING_LEN] = "/0";
 
