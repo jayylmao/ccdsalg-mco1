@@ -23,6 +23,13 @@ void evaluate(char *operator, int operand1, int operand2, int *result, bool *div
 		} else {
 			*result = operand1 / operand2;
 		}
+	} else if(strcmp(operator,"%") == 0){		// division
+		if(operand2 == 0) {
+			*result = 0;
+			*divisionByZero = true;
+		} else {
+			*result = operand1 % operand2;
+		}
 	} else if(strcmp(operator,"+") == 0){		// addition
 		*result = operand1 + operand2;
 	} else if(strcmp(operator,"-") == 0){		// subtraction
