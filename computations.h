@@ -17,7 +17,8 @@ void evaluate(char *operator, int operand1, int operand2, int *result, bool *div
 	} else if(strcmp(operator,"*") == 0){		// multiplication
 		*result = operand1 * operand2;
 	} else if(strcmp(operator,"/") == 0){		// division
-		if(operand2 == 0){
+		if(operand2 == 0) {
+			*result = 0;
 			*divisionByZero = true;
 		} else {
 			*result = operand1 / operand2;
@@ -85,7 +86,7 @@ void evaluatePostfix(QueueNode **outputHead, QueueNode **outputTail)
 				pop(&operandStack);
 			// Else the top operand in the stack is assigned to the 2nd operand and
 			// the next operand is assigned to the 1st operand then evaluate using the operator
-			}else {
+			} else {
 				operands[1] = atoi(operandStack->data);
 				pop(&operandStack);
 				operands[0] = atoi(operandStack->data);
@@ -93,9 +94,14 @@ void evaluatePostfix(QueueNode **outputHead, QueueNode **outputTail)
 			}
 
 			evaluate(current->data, operands[0], operands[1], &result, &divisionByZero);
-			sprintf(buffer, "%d", result);
-			push(&operandStack, buffer);
-			strcpy(buffer, "\0");
+
+			if (!divisionByZero) {
+				sprintf(buffer, "%d", result);
+				push(&operandStack, buffer);
+				strcpy(buffer, "\0");
+			}
+
+			dequeue(outputHead, outputTail);
 		}
 		current = current->next;
 	}
